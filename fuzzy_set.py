@@ -59,9 +59,7 @@ def binary_operation(func):
     @functools.wraps(func)
     def wrapped(self: 'FuzzySet', other: 'FuzzySet'):
         values = set(itertools.chain(self.values(), other.values()))
-        f = self.f
-        other_f = other.f
-        return func(self, values, f, other_f)
+        return self.cls(values, lambda x: func(self, self.f, other.f, x))
     return wrapped
 
 
@@ -209,37 +207,35 @@ class FuzzySet:
             )
         return self.cls(self.values(), lambda x: 1 - f(x))
 
-    # TODO: refactor operations to avoid code duplication
+    @binary_operation
+    def intersection_min(self, f1, f2, x):
+        return min(f1(x), f2(x))
 
     @binary_operation
-    def intersection_min(self, values, f, other_f):
-        return self.cls(values, lambda x: min(f(x), other_f(x)))
+    def intersection_mult(self, f1, f2, x):
+        return f1(x) * f2(x)
 
     @binary_operation
-    def intersection_mult(self, values, f, other_f):
-        return self.cls(values, lambda x: f(x) * other_f(x))
+    def intersection_lucasevich(self, f1, f2, x):
+        return max(f1(x) + f2(x) - 1, 0)
 
     @binary_operation
-    def intersection_lucasevich(self, values, f, other_f):
-        return self.cls(values, lambda x: max(f(x) + other_f(x) - 1, 0))
+    def union_max(self, f1, f2, x):
+        return max(f1(x), f2(x))
 
     @binary_operation
-    def union_max(self, values, f, other_f):
-        return self.cls(values, lambda x: max(f(x), other_f(x)))
+    def union_or(self, f1, f2, x):
+        return f1(x) + f2(x) - f1(x) * f2(x)
 
     @binary_operation
-    def union_or(self, values, f, other_f):
-        return self.cls(values, lambda x: f(x) + other_f(x) - f(x) * other_f(x))
-
-    @binary_operation
-    def union_lucasevich(self, values, f, other_f):
-        return self.cls(values, lambda x: min(f(x) + other_f(x), 1))
+    def union_lucasevich(self, f1, f2, x):
+        return min(f1(x) + f2(x), 1)
 
     def discretization(self, k):
         """
-        Дискретизация непрерывного нечеткого множества
-        :param k: количество дискрет
-        :return: нечеткого множество с k элементами
+        Дискретизация нечеткого множества
+        :param k: количество дискрет > 1
+        :return: нечеткое множество с k элементами
         """
         # TODO: need to override in FuzzyRelation?
         if self.f:
