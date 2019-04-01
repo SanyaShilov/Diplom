@@ -1,7 +1,26 @@
 import collections
 import numpy as np
+import operator
 
 from fuzzy_set import FuzzySet, FuzzyElement
+
+
+def composition(summation, multiplication):
+    def func(self: 'FuzzyRelation', other: 'FuzzyRelation'):
+        return FuzzyRelation(
+            [
+                FuzzyElement(
+                    (self.x[i][0], other.y[0][j]),
+                    summation(
+                        multiplication(self.z[i][k], other.z[k][j])
+                        for k in range(self.ylen)
+                    )
+                )
+                for j in range(other.ylen)
+                for i in range(self.xlen)
+            ]
+        )
+    return func
 
 
 class FuzzyRelation(FuzzySet):
@@ -30,46 +49,6 @@ class FuzzyRelation(FuzzySet):
     def plot(self):
         return self.x, self.y, np.array(self.z)
 
-    # TODO: refactor compositions to remove code duplication
-
-    def composition_max_min(self, other: 'FuzzyRelation'):
-        return FuzzyRelation(
-            [
-                FuzzyElement(
-                    (self.x[i][0], other.y[0][j]),
-                    max(
-                        min(self.z[i][k], other.z[k][j]) for k in range(self.ylen)
-                    )
-                )
-                for j in range(other.ylen)
-                for i in range(self.xlen)
-            ]
-        )
-
-    def composition_min_max(self, other: 'FuzzyRelation'):
-        return FuzzyRelation(
-            [
-                FuzzyElement(
-                    (self.x[i][0], other.y[0][j]),
-                    min(
-                        max(self.z[i][k], other.z[k][j]) for k in range(self.ylen)
-                    )
-                )
-                for j in range(other.ylen)
-                for i in range(self.xlen)
-            ]
-        )
-
-    def composition_max_mult(self, other: 'FuzzyRelation'):
-        return FuzzyRelation(
-            [
-                FuzzyElement(
-                    (self.x[i][0], other.y[0][j]),
-                    max(
-                        self.z[i][k] * other.z[k][j] for k in range(self.ylen)
-                    )
-                )
-                for j in range(other.ylen)
-                for i in range(self.xlen)
-            ]
-        )
+    composition_max_min = composition(max, min)
+    composition_min_max = composition(min, max)
+    composition_max_mult = composition(max, operator.mul)
