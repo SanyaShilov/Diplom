@@ -9,7 +9,15 @@ from range import Range
 
 @functools.total_ordering
 class FuzzyElement:
+    """
+    Элемент нечеткого множества
+    """
+    # TODO: move to fuzzy_element.py
     def __init__(self, x, p):
+        """
+        :param x: значение элемента
+        :param p: степень принадлежности элемента нечеткому множеству
+        """
         self.x = x
         self.p = p
 
@@ -27,6 +35,11 @@ class FuzzyElement:
 
 
 def interpolate(elements):
+    """
+    Часть создания верхней огибающей в принципе нечеткого обобщения Заде -
+    устранение ступенчатости
+    """
+    # TODO: staticmethod of FuzzyElement
     elements = [FuzzyElement(el.x, round(el.p, DIGITS)) for el in elements]
     last_element = elements[0]
     elements_to_interpolate = []
@@ -53,7 +66,16 @@ def binary_operation(func):
 
 
 class FuzzySet:
+    """
+    Нечеткое множество.
+    Реализовано на основе списка нечетких элементов, отсортированного по
+    возрастанию значения элемента.
+    """
     def __init__(self, elements, f=None):
+        """
+        :param elements: список элементов множества
+        :param f: функция принадлежности, None для дискретных множеств
+        """
         self.f = f
         self.lst = []
         for x in elements:
@@ -80,6 +102,13 @@ class FuzzySet:
     def __reversed__(self):
         return reversed(self.lst)
 
+    @property
+    def cls(self):
+        return self.__class__
+
+    def plot(self):
+        return list(self.values()), list(self.probabilities())
+
     def add(self, element):
         if self.f:
             if isinstance(element, FuzzyElement):
@@ -102,46 +131,54 @@ class FuzzySet:
             self.lst.insert(index, element)
 
     def values(self):
+        """Последовательность значений элементов множества"""
         return (element.x for element in self)
 
     def probabilities(self):
+        """Последовательность степеней принадлежностей элементов множества"""
         return (element.p for element in self)
 
     def height(self):
+        """Высота множества"""
         return max(self.probabilities())
 
     def is_normal(self):
+        """Является ли множество нормальным"""
         return self.height() >= 1 - EPS
 
     def is_subnormal(self):
+        """Является ли множество субнормальным"""
         return not self.is_normal()
 
     def normalized(self):
+        """Нормализованное множество"""
         height = self.height()
         f = self.f
         if not f:
-            return FuzzySet((FuzzyElement(element.x, element.p / height) for element in self))
-        return FuzzySet(self.values(), lambda x: f(x) / height)
-
-    def defuzzification_centroid(self):
-        return (
-            sum(element.x * element.p for element in self) /
-            sum(element.p for element in self)
-        )
+            return self.cls(
+                (FuzzyElement(element.x, element.p / height)
+                 for element in self)
+            )
+        return self.cls(self.values(), lambda x: f(x) / height)
 
     def supp(self):
+        """Носитель множества"""
         return self.alpha_section(EPS)
 
     def core(self):
+        """Ядро множества"""
         return self.alpha_section(1 - EPS)
 
     def alpha_section(self, alpha):
+        """альфа-сечение множества"""
         return [element.x for element in self if element.p >= alpha]
 
     def is_empty(self):
-        return not self
+        """Является ли множество пустым"""
+        return not self.supp()
 
     def is_convex(self):
+        """Является ли множество выпуклым"""
         if not self:
             return True
         up = True
@@ -156,43 +193,63 @@ class FuzzySet:
             tmp = nxt
         return True
 
+    def defuzzification_centroid(self):
+        """Дефаззификация методом центра тяжести"""
+        return (
+            sum(element.x * element.p for element in self) /
+            sum(element.p for element in self)
+        )
+
     def complement(self):
+        """Дополнение множества"""
         f = self.f
         if not f:
-            return FuzzySet((FuzzyElement(element.x, 1 - element.p) for element in self))
-        return FuzzySet(self.values(), lambda x: 1 - f(x))
+            return self.cls(
+                (FuzzyElement(element.x, 1 - element.p) for element in self)
+            )
+        return self.cls(self.values(), lambda x: 1 - f(x))
+
+    # TODO: refactor operations to avoid code duplication
 
     @binary_operation
     def intersection_min(self, values, f, other_f):
-        return FuzzySet(values, lambda x: min(f(x), other_f(x)))
+        return self.cls(values, lambda x: min(f(x), other_f(x)))
 
     @binary_operation
     def intersection_mult(self, values, f, other_f):
-        return FuzzySet(values, lambda x: f(x) * other_f(x))
+        return self.cls(values, lambda x: f(x) * other_f(x))
 
     @binary_operation
     def intersection_lucasevich(self, values, f, other_f):
-        return FuzzySet(values, lambda x: max(f(x) + other_f(x) - 1, 0))
+        return self.cls(values, lambda x: max(f(x) + other_f(x) - 1, 0))
 
     @binary_operation
     def union_max(self, values, f, other_f):
-        return FuzzySet(values, lambda x: max(f(x), other_f(x)))
+        return self.cls(values, lambda x: max(f(x), other_f(x)))
 
     @binary_operation
     def union_or(self, values, f, other_f):
-        return FuzzySet(values, lambda x: f(x) + other_f(x) - f(x) * other_f(x))
+        return self.cls(values, lambda x: f(x) + other_f(x) - f(x) * other_f(x))
 
     @binary_operation
     def union_lucasevich(self, values, f, other_f):
-        return FuzzySet(values, lambda x: min(f(x) + other_f(x), 1))
+        return self.cls(values, lambda x: min(f(x) + other_f(x), 1))
 
     def discretization(self, k):
+        """
+        Дискретизация непрерывного нечеткого множества
+        :param k: количество дискрет
+        :return: нечеткого множество с k элементами
+        """
+        # TODO: need to override in FuzzyRelation?
         if self.f:
             return FuzzySet(Range(self[0].x, self[-1].x, n=k), self.f)
         step = (len(self) - 1) // (k - 1)
         return FuzzySet((element.copy() for element in self[::step]))
 
     def upper_circumflex(self):
+        """Построение верхней огибающей в принципе нечеткого обобщения Заде"""
+        # TODO: need to override in FuzzyRelation?
         forward = []
         p = self[0].p
         for element in self:
@@ -221,6 +278,8 @@ class FuzzySet:
 
     @staticmethod
     def generalization_zade(*fsets, f, k):
+        """Принцип нечеткого обобщения Заде"""
+        # TODO: need to override in FuzzyRelation?
         new = collections.defaultdict(float)
         for elements in itertools.product(
                 *(fs.discretization(k) for fs in fsets)
@@ -233,6 +292,8 @@ class FuzzySet:
 
     @staticmethod
     def generalization_alpha(*fsets, f, k):
+        """альфа-уровневый принцип обобщения"""
+        # TODO: need to override in FuzzyRelation?
         new = collections.defaultdict(float)
         r = Range(0, 1, n=k)
         for alpha in r:

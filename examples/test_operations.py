@@ -9,8 +9,8 @@ def plot_unary_operation(fs, operation, subplot=None, show=False):
     target = plt
     if subplot:
         target = plt.subplot(*subplot)
-    target.plot(list(fs.values()), list(fs.probabilities()))
-    target.plot(list(result.values()), list(result.probabilities()))
+    target.plot(*fs.plot())
+    target.plot(*result.plot())
     plt.grid(True)
     if show:
         plt.show()
@@ -21,9 +21,9 @@ def plot_binary_operation(fs1, fs2, operation, subplot=None, show=False):
     target = plt
     if subplot:
         target = plt.subplot(*subplot)
-    target.plot(list(fs1.values()), list(fs1.probabilities()))
-    target.plot(list(fs2.values()), list(fs2.probabilities()))
-    target.plot(list(result.values()), list(result.probabilities()))
+    target.plot(*fs1.plot())
+    target.plot(*fs2.plot())
+    target.plot(*result.plot())
     plt.grid(True)
     if show:
         plt.show()
