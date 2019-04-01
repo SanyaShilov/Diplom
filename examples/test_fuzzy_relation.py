@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from const import *
 from fuzzy_relation import FuzzyRelation
-from fuzzy_set import FuzzyElement
+from fuzzy_element import FuzzyElement
 from range import Range
 
 

@@ -1,4 +1,4 @@
-from fuzzy_set import FuzzyElement
+from fuzzy_element import FuzzyElement
 from fuzzy_set import FuzzySet
 
 
