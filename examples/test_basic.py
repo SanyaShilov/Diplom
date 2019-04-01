@@ -17,9 +17,9 @@ fs = FuzzySet(
 )
 
 print('Нечеткое множество:', fs)
-print('Элементы множества:', list(fs.values()))
-print('Соответствующие вероятности:', list(fs.probabilities()))
-print('Высота множества:', fs.height())
+print('Элементы множества:', list(fs.values))
+print('Соответствующие вероятности:', list(fs.probabilities))
+print('Высота множества:', fs.height)
 print('Является нормальным:', fs.is_normal())
 print('Носитель множества:', fs.supp())
 print('Ядро множества:', fs.core())

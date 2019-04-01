@@ -58,7 +58,7 @@ def interpolate(elements):
 def binary_operation(func):
     @functools.wraps(func)
     def wrapped(self: 'FuzzySet', other: 'FuzzySet'):
-        values = set(itertools.chain(self.values(), other.values()))
+        values = set(itertools.chain(self.values, other.values))
         return self.cls(values, lambda x: func(self, self.f, other.f, x))
     return wrapped
 
@@ -78,6 +78,9 @@ class FuzzySet:
         self.lst = []
         for x in elements:
             self.add(x)
+        self.values = [element.x for element in self]
+        self.probabilities = [element.p for element in self]
+        self.height = max(self.probabilities)
 
     def __repr__(self):
         return repr(self.lst)
@@ -105,7 +108,7 @@ class FuzzySet:
         return self.__class__
 
     def plot(self):
-        return list(self.values()), list(self.probabilities())
+        return self.values, self.probabilities
 
     def add(self, element):
         if self.f:
@@ -128,21 +131,9 @@ class FuzzySet:
         else:
             self.lst.insert(index, element)
 
-    def values(self):
-        """Последовательность значений элементов множества"""
-        return (element.x for element in self)
-
-    def probabilities(self):
-        """Последовательность степеней принадлежностей элементов множества"""
-        return (element.p for element in self)
-
-    def height(self):
-        """Высота множества"""
-        return max(self.probabilities())
-
     def is_normal(self):
         """Является ли множество нормальным"""
-        return self.height() >= 1 - EPS
+        return self.height >= 1 - EPS
 
     def is_subnormal(self):
         """Является ли множество субнормальным"""
@@ -150,14 +141,13 @@ class FuzzySet:
 
     def normalized(self):
         """Нормализованное множество"""
-        height = self.height()
         f = self.f
         if not f:
             return self.cls(
-                (FuzzyElement(element.x, element.p / height)
+                (FuzzyElement(element.x, element.p / self.height)
                  for element in self)
             )
-        return self.cls(self.values(), lambda x: f(x) / height)
+        return self.cls(self.values, lambda x: f(x) / self.height)
 
     def supp(self):
         """Носитель множества"""
@@ -205,7 +195,7 @@ class FuzzySet:
             return self.cls(
                 (FuzzyElement(element.x, 1 - element.p) for element in self)
             )
-        return self.cls(self.values(), lambda x: 1 - f(x))
+        return self.cls(self.values, lambda x: 1 - f(x))
 
     @binary_operation
     def intersection_min(self, f1, f2, x):

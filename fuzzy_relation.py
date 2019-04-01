@@ -22,13 +22,13 @@ class FuzzyRelation(FuzzySet):
             [self[i * self.ylen + j].x[1] for j in range(self.ylen)]
             for i in range(self.xlen)
         ]
-        self.z = np.array([
+        self.z = [
             [self[i * self.ylen + j].p for j in range(self.ylen)]
             for i in range(self.xlen)
-        ])
+        ]
 
     def plot(self):
-        return self.x, self.y, self.z
+        return self.x, self.y, np.array(self.z)
 
     # TODO: refactor compositions to remove code duplication
 
