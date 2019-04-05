@@ -51,4 +51,4 @@ class FuzzyRelation(FuzzySet):
 
     composition_max_min = composition(max, min)
     composition_min_max = composition(min, max)
-    composition_max_mult = composition(max, operator.mul)
+    composition_max_mul = composition(max, operator.mul)

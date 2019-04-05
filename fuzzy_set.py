@@ -1,6 +1,5 @@
 import bisect
 import collections
-import functools
 import itertools
 
 from const import *
@@ -9,7 +8,6 @@ from range import Range
 
 
 def binary_operation(func):
-    @functools.wraps(func)
     def wrapped(self: 'FuzzySet', other: 'FuzzySet'):
         values = set(itertools.chain(self.values, other.values))
         return self.cls(values, lambda x: func(self, self.f, other.f, x))

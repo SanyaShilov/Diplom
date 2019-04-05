@@ -65,4 +65,4 @@ rel6 = FuzzyRelation(
 )
 print(rel5.composition_max_min(rel6).matrix)
 print(rel5.composition_min_max(rel6).matrix)
-print(rel5.composition_max_mult(rel6).matrix)
+print(rel5.composition_max_mul(rel6).matrix)
