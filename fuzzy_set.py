@@ -241,3 +241,25 @@ class FuzzySet:
             new[ymin] = alpha
             new[ymax] = alpha
         return FuzzySet((FuzzyElement(x, p) for x, p in new.items()))
+
+    def construct_relation(self, other):
+        from fuzzy_relation import FuzzyRelation
+        return FuzzyRelation(
+            ((x, y) for x in self.values for y in other.values),
+            lambda t: min(self.f(t[0]), other.f(t[1]))
+        ) if self.f and other.f else FuzzyRelation(
+            (FuzzyElement((el1.x, el2.x), min(el1.p, el2.p))
+             for el1 in self for el2 in other)
+        )
+
+    def as_relation(self):
+        from fuzzy_relation import FuzzyRelation
+        return FuzzyRelation(
+            (FuzzyElement((0, el.x), el.p) for el in self),
+            lambda t: self.f(t[1]) if self.f else None
+        )
+
+    def composition_zade(self, rel):
+        """Композиционное правило нечеткого вывода Заде"""
+        # TODO: optimize?
+        return self.as_relation().composition_max_min(rel).as_set()

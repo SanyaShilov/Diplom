@@ -2,7 +2,8 @@ import collections
 import numpy as np
 import operator
 
-from fuzzy_set import FuzzySet, FuzzyElement
+from fuzzy_element import FuzzyElement
+from fuzzy_set import FuzzySet
 
 
 def composition(summation, multiplication):
@@ -48,6 +49,12 @@ class FuzzyRelation(FuzzySet):
 
     def plot(self):
         return self.x, self.y, np.array(self.z)
+
+    def as_set(self):
+        return FuzzySet(
+            (FuzzyElement(el.x[1], el.p) for el in self),
+            lambda x: self.f((0, x)) if self.f else None
+        )
 
     composition_max_min = composition(max, min)
     composition_min_max = composition(min, max)

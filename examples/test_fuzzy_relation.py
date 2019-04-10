@@ -1,9 +1,11 @@
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
+from pprint import pprint
 
 from const import *
-from fuzzy_relation import FuzzyRelation
 from fuzzy_element import FuzzyElement
+from fuzzy_relation import FuzzyRelation
+from fuzzy_set import FuzzySet
 from range import Range
 
 
@@ -63,6 +65,37 @@ rel6 = FuzzyRelation(
         FuzzyElement((4, 4), 0.3),
     ]
 )
-print(rel5.composition_max_min(rel6).matrix)
-print(rel5.composition_min_max(rel6).matrix)
-print(rel5.composition_max_mul(rel6).matrix)
+pprint(rel5.composition_max_min(rel6).matrix, width=50)
+pprint(rel5.composition_min_max(rel6).matrix, width=50)
+pprint(rel5.composition_max_mul(rel6).matrix, width=50)
+
+fs1 = FuzzySet(
+    [
+        FuzzyElement(1, 0),
+        FuzzyElement(2, 0.1),
+        FuzzyElement(3, 0.5),
+        FuzzyElement(4, 0.8),
+        FuzzyElement(5, 1),
+    ]
+)
+fs2 = FuzzySet(
+    [
+        FuzzyElement(5, 1),
+        FuzzyElement(10, 0.8),
+        FuzzyElement(15, 0.4),
+        FuzzyElement(20, 0.2),
+    ]
+)
+rel = fs1.construct_relation(fs2)
+pprint(rel.matrix)
+
+fs3 = FuzzySet(
+    [
+        FuzzyElement(1, 0.3),
+        FuzzyElement(2, 0.5),
+        FuzzyElement(3, 1),
+        FuzzyElement(4, 0.7),
+        FuzzyElement(5, 0.4),
+    ]
+)
+pprint(fs3.composition_zade(rel))
