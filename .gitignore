@@ -1,3 +1,4 @@
 .idea
 __pycache__
-Shtovba_Fuzzy_MATLAB.PDF
+*.pdf
+*.jpg
