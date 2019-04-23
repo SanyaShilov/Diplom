@@ -4,8 +4,7 @@ from implementation import *
 def breadth_first_search_3(graph, start, goal):
     frontier = Queue()
     frontier.put(start)
-    came_from = {}
-    came_from[start] = None
+    came_from = {start: None}
 
     while not frontier.empty():
         current = frontier.get()
@@ -21,10 +20,9 @@ def breadth_first_search_3(graph, start, goal):
     return came_from
 
 
-graph = GridWithWeights(15, 15)
-graph.walls = [(i, 5) for i in range(3, 12)] + [(11, j) for j in range(6, 12)]
-start = (0, 13)
-goal = (14, 2)
+graph = Grid.from_filename('/home/sanyash/myrepos/Diplom/matrix4.txt')
+start = (0, 14)
+goal = (19, 0)
 
 came_from = breadth_first_search_3(graph, start, goal)
 draw_grid(graph, width=3, point_to=came_from, start=start, goal=goal)

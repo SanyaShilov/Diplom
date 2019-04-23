@@ -1,23 +1,6 @@
 import collections
 import queue
-
-
-class SimpleGraph:
-    def __init__(self):
-        self.edges = {}
-    
-    def neighbors(self, point):
-        return self.edges[point]
-
-
-example_graph = SimpleGraph()
-example_graph.edges = {
-    'A': ['B'],
-    'B': ['A', 'C', 'D'],
-    'C': ['A'],
-    'D': ['E', 'A'],
-    'E': ['B']
-}
+import math
 
 
 class Queue:
@@ -50,11 +33,6 @@ class PriorityQueue:
         return self.elements.get()[1]
 
 
-# utility functions for dealing with square grids
-def from_point_width(point, width):
-    return point % width, point // width
-
-
 def draw_tile(graph, point, style):
     r = "."
     if 'number' in style and point in style['number']:
@@ -76,7 +54,7 @@ def draw_tile(graph, point, style):
         r = "Z"
     if 'path' in style and point in style['path']:
         r = "@"
-    if point in graph.walls:
+    if graph[point] == math.inf:
         r = "#"
     return r
 
@@ -88,32 +66,44 @@ def draw_grid(graph, width=2, **style):
         print()
 
 
-# data from main article
-DIAGRAM1_WALLS = [
-    from_point_width(point, width=30) for point in [
-        21, 22, 51, 52, 81, 82, 93, 94, 111, 112, 123, 124, 133, 134, 141,
-        142, 153, 154, 163, 164, 171, 172, 173, 174, 175, 183, 184, 193,
-        194, 201, 202, 203, 204, 205, 213, 214, 223, 224, 243, 244, 253,
-        254, 273, 274, 283, 284, 303, 304, 313, 314, 333, 334, 343, 344,
-        373, 374, 403, 404, 433, 434]
-]
+class Grid:
+    EMPTY = '.'
+    BLOCK = '#'
 
+    def __init__(self, width=None, height=None, matrix=None):
+        if matrix:
+            self.width = len(matrix[0])
+            self.height = len(matrix)
+            self.matrix = [
+                [
+                    1 if symbol == Grid.EMPTY else math.inf if symbol == Grid.BLOCK else int(symbol)
+                    for symbol in line
+                ]
+                for line in matrix
+            ]
+        else:
+            if not width or not height:
+                raise RuntimeError('Can\'t construct grid')
+            self.width = width
+            self.height = height
+            self.matrix = [1 * width for _ in range(height)]
 
-class SquareGrid:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.walls = []
-    
+    @classmethod
+    def from_filename(cls, filename):
+        with open(filename) as f:
+            matrix = [line.split() for line in f.readlines()]
+            return cls(matrix=matrix)
+
     def in_bounds(self, point):
         x, y = point
         return 0 <= x < self.width and 0 <= y < self.height
-    
+
     def passable(self, point):
-        return point not in self.walls
-    
+        x, y = point
+        return self.matrix[y][x] != math.inf
+
     def neighbors(self, point):
-        (x, y) = point
+        x, y = point
         results = [(x+1, y), (x, y-1), (x-1, y), (x, y+1)]
         if (x + y) % 2 == 0:
             results.reverse()  # aesthetics
@@ -121,25 +111,20 @@ class SquareGrid:
         results = filter(self.passable, results)
         return results
 
-
-class GridWithWeights(SquareGrid):
-    def __init__(self, width, height):
-        super().__init__(width, height)
-        self.weights = {}
-    
     def cost(self, from_node, to_node):
-        return self.weights.get(to_node, 1)
+        x, y = to_node
+        return self.matrix[y][x]
 
+    def __repr__(self):
+        return '\n'.join(
+            ' '.join(
+                str(elem) if elem != math.inf else Grid.BLOCK for elem in line
+            )
+            for line in self.matrix
+        )
 
-diagram4 = GridWithWeights(10, 10)
-diagram4.walls = [(1, 7), (1, 8), (2, 7), (2, 8), (3, 7), (3, 8)]
-diagram4.weights = {loc: 5 for loc in [(3, 4), (3, 5), (4, 1), (4, 2),
-                                       (4, 3), (4, 4), (4, 5), (4, 6), 
-                                       (4, 7), (4, 8), (5, 1), (5, 2),
-                                       (5, 3), (5, 4), (5, 5), (5, 6), 
-                                       (5, 7), (5, 8), (6, 2), (6, 3), 
-                                       (6, 4), (6, 5), (6, 6), (6, 7), 
-                                       (7, 3), (7, 4), (7, 5)]}
+    def __getitem__(self, item):
+        return self.matrix[item[1]][item[0]]
 
 
 def greedy_search(graph, start, goal):
@@ -229,3 +214,7 @@ def a_star_search(graph, start, goal):
                 came_from[next_point] = current
     
     return came_from, cost_so_far
+
+
+g = Grid.from_filename('/home/sanyash/myrepos/Diplom/matrix.txt')
+g2 = Grid.from_filename('/home/sanyash/myrepos/Diplom/matrix2.txt')
