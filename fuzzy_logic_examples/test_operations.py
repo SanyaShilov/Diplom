@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 
-from fuzzy_set import FuzzySet
-from range import Range
+from fuzzy_logic.fuzzy_set import FuzzySet
+from utils.range import Range
 
 
 def plot_unary_operation(fs, operation, subplot=None, show=False):

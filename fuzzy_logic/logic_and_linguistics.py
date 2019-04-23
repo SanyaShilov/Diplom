@@ -1,5 +1,5 @@
-from range import Range
-from fuzzy_set import FuzzySet
+from utils.range import Range
+from fuzzy_logic.fuzzy_set import FuzzySet
 
 
 BOOL_RANGE = Range(0, 1)

@@ -1,4 +1,4 @@
-from implementation import *
+from path_search.implementation import *
 
 
 def breadth_first_search_3(graph, start, goal):

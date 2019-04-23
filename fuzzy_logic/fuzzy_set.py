@@ -2,9 +2,9 @@ import bisect
 import collections
 import itertools
 
-from const import *
-from fuzzy_element import FuzzyElement
-from range import Range
+from utils.const import *
+from fuzzy_logic.fuzzy_element import FuzzyElement
+from utils.range import Range
 
 
 def binary_operation(func):
@@ -243,7 +243,7 @@ class FuzzySet:
         return FuzzySet((FuzzyElement(x, p) for x, p in new.items()))
 
     def construct_relation(self, other):
-        from fuzzy_relation import FuzzyRelation
+        from fuzzy_logic.fuzzy_relation import FuzzyRelation
         return FuzzyRelation(
             ((x, y) for x in self.values for y in other.values),
             lambda t: min(self.f(t[0]), other.f(t[1]))
@@ -253,7 +253,7 @@ class FuzzySet:
         )
 
     def as_relation(self):
-        from fuzzy_relation import FuzzyRelation
+        from fuzzy_logic.fuzzy_relation import FuzzyRelation
         return FuzzyRelation(
             (FuzzyElement((0, el.x), el.p) for el in self),
             lambda t: self.f(t[1]) if self.f else None

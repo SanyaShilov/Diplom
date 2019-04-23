@@ -1,6 +1,6 @@
 import functools
 
-from const import *
+from utils.const import *
 
 
 @functools.total_ordering

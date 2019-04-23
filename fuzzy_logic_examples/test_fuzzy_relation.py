@@ -2,11 +2,11 @@ from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 from pprint import pprint
 
-from const import *
-from fuzzy_element import FuzzyElement
-from fuzzy_relation import FuzzyRelation
-from fuzzy_set import FuzzySet
-from range import Range
+from utils.const import *
+from fuzzy_logic.fuzzy_element import FuzzyElement
+from fuzzy_logic.fuzzy_relation import FuzzyRelation
+from fuzzy_logic.fuzzy_set import FuzzySet
+from utils.range import Range
 
 
 rel1 = FuzzyRelation(

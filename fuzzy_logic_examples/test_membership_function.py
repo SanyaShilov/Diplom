@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 
-import membership_function
-from range import Range
+from fuzzy_logic import membership_function
+from utils.range import Range
 
 
 r = Range(0, 100, h=1)

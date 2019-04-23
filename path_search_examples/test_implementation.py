@@ -1,4 +1,4 @@
-from implementation import *
+from path_search.implementation import *
 
 
 draw_grid(g)
@@ -52,7 +52,7 @@ draw_grid(g, width=2, point_to=parents, start=(8, 7), goal=(17, 2))
 print()
 
 
-from implementation import *
+from path_search.implementation import *
 came_from, cost_so_far = dijkstra_search(g2, (1, 4), (7, 8))
 draw_grid(g2, width=3, point_to=came_from, start=(1, 4), goal=(7, 8))
 print()

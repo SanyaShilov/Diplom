@@ -1,4 +1,4 @@
-from const import *
+from utils.const import *
 
 
 def triangular(a, b, c):

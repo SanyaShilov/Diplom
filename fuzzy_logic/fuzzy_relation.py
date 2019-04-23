@@ -2,8 +2,8 @@ import collections
 import numpy as np
 import operator
 
-from fuzzy_element import FuzzyElement
-from fuzzy_set import FuzzySet
+from fuzzy_logic.fuzzy_element import FuzzyElement
+from fuzzy_logic.fuzzy_set import FuzzySet
 
 
 def composition(summation, multiplication):
