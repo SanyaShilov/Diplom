@@ -6,6 +6,6 @@ if __name__ == '__main__':
     start = (2, 9)
     goal = (9, 2)
     qapp = QApplication([])
-    w = Window(greedy_search_generator, grid, start, goal)
+    w = Window(a_star_search_generator, grid, start, goal)
     w.show()
     qapp.exec_()
