@@ -7,10 +7,10 @@ import random
 class Queue:
     def __init__(self):
         self.elements = collections.deque()
-    
+
     def empty(self):
         return len(self.elements) == 0
-    
+
     def put(self, element):
         self.elements.append(element)
 
@@ -112,6 +112,18 @@ class Grid:
         results = [(x+1, y), (x, y-1), (x-1, y), (x, y+1)]
         if (x + y) % 2 == 0:
             results.reverse()  # aesthetics
+        results = filter(self.in_bounds, results)
+        results = filter(self.passable, results)
+        return results
+
+    def all_neighbors(self, point):
+        x, y = point
+        results = [
+            (x + dx, y + dy)
+            for dx in range(-1, 2)
+            for dy in range(-1, 2)
+            if dx or dy
+        ]
         results = filter(self.in_bounds, results)
         results = filter(self.passable, results)
         return results
@@ -225,13 +237,13 @@ def dijkstra_search(graph, start, goal):
     frontier.put(start, 0)
     came_from = {start: None}
     cost_so_far = {start: 0}
-    
+
     while not frontier.empty():
         current = frontier.get()
-        
+
         if current == goal:
             break
-        
+
         for next_point in graph.neighbors(current):
             new_cost = cost_so_far[current] + graph.cost(current, next_point)
             if next_point not in cost_so_far or new_cost < cost_so_far[next_point]:
@@ -239,7 +251,7 @@ def dijkstra_search(graph, start, goal):
                 priority = new_cost
                 frontier.put(next_point, priority)
                 came_from[next_point] = current
-    
+
     return came_from, cost_so_far
 
 
@@ -299,13 +311,13 @@ def a_star_search(graph, start, goal):
     frontier.put(start, 0)
     came_from = {start: None}
     cost_so_far = {start: 0}
-    
+
     while not frontier.empty():
         current = frontier.get()
-        
+
         if current == goal:
             break
-        
+
         for next_point in graph.neighbors(current):
             new_cost = cost_so_far[current] + graph.cost(current, next_point)
             if next_point not in cost_so_far or new_cost < cost_so_far[next_point]:
@@ -313,7 +325,7 @@ def a_star_search(graph, start, goal):
                 priority = new_cost + heuristic2(goal, next_point)
                 frontier.put(next_point, priority)
                 came_from[next_point] = current
-    
+
     return came_from, cost_so_far
 
 
