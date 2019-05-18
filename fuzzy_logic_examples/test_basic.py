@@ -1,5 +1,4 @@
-from fuzzy_logic.fuzzy_element import FuzzyElement
-from fuzzy_logic.fuzzy_set import FuzzySet
+from fuzzy_logic import *
 
 
 # понятие "мужчина среднего роста" в виде нечеткого множества

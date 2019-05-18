@@ -1,18 +1,13 @@
 from matplotlib import pyplot as plt
 
-from fuzzy_logic.fuzzy_base import FuzzyBase
-from fuzzy_logic import membership_function
-from fuzzy_logic.fuzzy_rule import FuzzyRule
-from fuzzy_logic.fuzzy_set import *
-from fuzzy_logic.logic_and_linguistics import *
-from utils.range import Range
+from fuzzy_logic import *
 
 
 r_18_80 = Range(18, 80, h=0.5)
 r_0_1 = Range(0, 1)
 
 f_young = lambda x: 1 / (1 + ((x - 18) / 8) ** 8)
-f_middle = membership_function.gaussian(40, 9)
+f_middle = gaussian(40, 9)
 f_old = lambda x: 1 / (1 + (abs(x - 90) / 28) ** 8)
 
 f_very_old = f_very(f_old)
@@ -36,8 +31,8 @@ for func in [
 plt.grid(True)
 plt.show()
 
-input_28 = FuzzySet(r_18_80, membership_function.singleton(28))
-input_40 = FuzzySet(r_18_80, membership_function.singleton(40))
+input_28 = FuzzySet(r_18_80, singleton(28))
+input_40 = FuzzySet(r_18_80, singleton(40))
 input_young = FuzzySet(r_18_80, f_young)
 input_middle = FuzzySet(r_18_80, f_middle)
 input_old = FuzzySet(r_18_80, f_old)

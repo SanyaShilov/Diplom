@@ -1,14 +1,13 @@
 from utils.range import Range
-from fuzzy_logic.fuzzy_set import FuzzySet
 
 
 BOOL_RANGE = Range(0, 1)
 
 
-def unary_operation(q):
+def unary_operation(o):
     def modified(f):
         def result(x):
-            return q(f, x)
+            return o(f, x)
         return result
     return modified
 
@@ -79,5 +78,11 @@ def clear_lie(x):
     return 1 if x == 0 else 0
 
 
-fs_clear_truth = FuzzySet(Range(0, 1), clear_truth)
-fs_clear_lie = FuzzySet(Range(0, 1), clear_lie)
+__all__ = [
+    'BOOL_RANGE',
+    'f_not', 'f_very', 'f_more_or_less',
+    'f_and', 'f_or', 'f_imp',
+    'truth_zade', 'lie_zade',
+    'truth_baldwin', 'lie_baldwin',
+    'clear_truth', 'clear_lie',
+]

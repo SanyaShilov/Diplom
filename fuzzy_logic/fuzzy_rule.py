@@ -1,4 +1,4 @@
-from fuzzy_logic.fuzzy_set import *
+from fuzzy_logic.fuzzy_set import FuzzySet
 
 
 class FuzzyRule:

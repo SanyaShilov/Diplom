@@ -1,7 +1,6 @@
 from matplotlib import pyplot as plt
 
-from fuzzy_logic.logic_and_linguistics import *
-from utils.range import Range
+from fuzzy_logic import *
 
 
 cold = lambda x: 1 / (1 + ((x - 12) / 6) ** 12)

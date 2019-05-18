@@ -1,8 +1,6 @@
 from matplotlib import pyplot as plt
 
-from fuzzy_logic.fuzzy_set import FuzzySet
-from fuzzy_logic import membership_function
-from utils.range import Range
+from fuzzy_logic import *
 
 
 fs1 = FuzzySet(Range(1, 4), membership_function.trapezoidal(1, 2, 3, 4))
