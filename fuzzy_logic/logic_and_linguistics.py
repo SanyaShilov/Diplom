@@ -51,21 +51,16 @@ def f_imp(f1, f2, x):
     return max(1 - f1(x), f2(x))
 
 
-A = 0.4
-A1 = 1 - A
-A12 = (A + 1) / 2
-
-
-def truth_zade(x):
+def truth_zade(x, a=0.4):
     return (
-        0 if x <= A else
-        2 * ((x - A) / A1) ** 2 if x <= A12 else
-        1 - 2 * ((1 - x) / A1) ** 2
+        0 if x <= a else
+        2 * ((x - a) / (1 - a)) ** 2 if x <= (a + 1) / 2 else
+        1 - 2 * ((1 - x) / (1 - a)) ** 2
     )
 
 
-def lie_zade(x):
-    return truth_zade(1 - x)
+def lie_zade(x, a=0.4):
+    return truth_zade(1 - x, a)
 
 
 def truth_baldwin(x):

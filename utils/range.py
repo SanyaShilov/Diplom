@@ -1,3 +1,6 @@
+from utils.const import *
+
+
 DEFAULT_N = 101
 
 
@@ -14,4 +17,4 @@ class Range:
             self.h = (b - a) / (self.n - include_b)
 
     def __iter__(self):
-        return (self.a + i * self.h for i in range(self.n))
+        return (round(self.a + i * self.h, DIGITS) for i in range(self.n))

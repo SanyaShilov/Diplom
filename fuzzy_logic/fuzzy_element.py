@@ -24,7 +24,7 @@ class FuzzyElement:
         return self.x > other.x
 
     def __repr__(self):
-        return '{}/{}'.format(self.x, round(self.p, 12))
+        return '{}/{}'.format(self.x, round(self.p, DIGITS))
 
     def copy(self):
         return FuzzyElement(self.x, self.p)
