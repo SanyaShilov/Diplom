@@ -10,8 +10,9 @@ class FuzzyRule:
     def truth(self, inputs):
         result = self.weight
         for input, condition in zip(inputs, self.conditions):
-            height = input.intersection_min(condition).height
-            result *= height
+            if condition:
+                height = input.intersection_min(condition).height
+                result *= height
         return result
 
     def evaluate(self, inputs):

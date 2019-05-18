@@ -53,7 +53,7 @@ class FuzzyRelation(FuzzySet):
     def as_set(self):
         return FuzzySet(
             (FuzzyElement(el.x[1], el.p) for el in self),
-            lambda x: self.f((0, x)) if self.f else None
+            (lambda x: self.f((0, x))) if self.f else None
         )
 
     composition_max_min = composition(max, min)

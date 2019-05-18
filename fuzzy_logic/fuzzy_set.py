@@ -64,7 +64,7 @@ class FuzzySet:
     def add(self, element):
         if self.f:
             if isinstance(element, FuzzyElement):
-                if abs(self.f(element.x) != element.p) > EPS:
+                if abs(self.f(element.x) - element.p) > EPS:
                     raise RuntimeError(
                         'Error while adding fuzzy element '
                         'into set with function'
@@ -256,7 +256,7 @@ class FuzzySet:
         from fuzzy_logic.fuzzy_relation import FuzzyRelation
         return FuzzyRelation(
             (FuzzyElement((0, el.x), el.p) for el in self),
-            lambda t: self.f(t[1]) if self.f else None
+            (lambda t: self.f(t[1])) if self.f else None
         )
 
     def composition_zade(self, rel):

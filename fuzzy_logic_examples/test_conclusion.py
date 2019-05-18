@@ -38,22 +38,23 @@ input_middle = FuzzySet(r_18_80, f_middle)
 input_old = FuzzySet(r_18_80, f_old)
 input_very_old = FuzzySet(r_18_80, f_very_old)
 
-
-base = FuzzyBase(
-    [
-        FuzzyRule(
-            [FuzzySet(r_18_80, f_young)],
-            FuzzySet(r_0_1, f_high)
-        ),
-        FuzzyRule(
-            [FuzzySet(r_18_80, f_middle)],
-            FuzzySet(r_0_1, f_low)
-        ),
-        FuzzyRule(
-            [FuzzySet(r_18_80, f_very_old)],
-            FuzzySet(r_0_1, f_high)
-        ),
-    ]
+base = FuzzyBase.from_parameters(
+    conditions_ranges=[r_18_80],
+    conclusion_range=r_0_1,
+    rules_parameters=[
+        {
+            'conditions': [f_young],
+            'conclusion': f_high
+        },
+        {
+            'conditions': [f_middle],
+            'conclusion': f_low
+        },
+        {
+            'conditions': [f_old],
+            'conclusion': f_high
+        },
+    ],
 )
 
 for input in [
