@@ -61,4 +61,3 @@ def my_search_generator(graph, start, goal):
                         visited
                     )
                     current = find_new_path(graph, current, visited)
-

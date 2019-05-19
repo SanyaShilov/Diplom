@@ -23,8 +23,8 @@ class Window(QWidget):
         self.path = []
         self.came_from = None
 
-        self.cellsize = min(800 // self.grid.width,
-                            800 // self.grid.height)
+        self.cellsize = min(1200 // self.grid.width,
+                            900 // self.grid.height)
         self.cellsize3 = self.cellsize // 3
         self.cellsize4 = self.cellsize // 4
         self.setFixedSize(self.cellsize * self.grid.width,

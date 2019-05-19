@@ -7,6 +7,6 @@ if __name__ == '__main__':
     start = (0, 3)
     goal = (11, 3)
     qapp = QApplication([])
-    w = Window(my_search_generator, grid, start, goal,delay=300)
+    w = MainWindow(my_search_generator)
     w.show()
     qapp.exec_()

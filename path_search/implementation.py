@@ -91,7 +91,7 @@ class Grid:
                 raise RuntimeError('Can\'t construct grid')
             self.width = width
             self.height = height
-            self.matrix = [1 * width for _ in range(height)]
+            self.matrix = [[1 for _ in range(width)] for _ in range(height)]
 
     @classmethod
     def from_filename(cls, filename):
@@ -142,6 +142,9 @@ class Grid:
 
     def __getitem__(self, item):
         return self.matrix[item[1]][item[0]]
+
+    def __setitem__(self, item, value):
+        self.matrix[item[1]][item[0]] = value
 
 
 def breadth_first_search(graph, start, goal):
