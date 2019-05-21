@@ -51,7 +51,7 @@ def my_search_generator(graph, start, goal):
                 points.append(next_point)
         else:
             if points:
-                points.sort(key=lambda point: graph.cost(current, point) + heuristic2(goal, point))
+                points.sort(key=lambda point: graph.cost(current, point) + heuristic(goal, point))
                 current = points[0]
             else:
                 current = find_new_path(graph, current, visited)
