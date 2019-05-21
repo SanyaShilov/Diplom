@@ -71,6 +71,10 @@ def draw_grid(graph, width=2, **style):
         print()
 
 
+def distance(p1, p2):
+    return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
+
+
 class Grid:
     EMPTY = '.'
     BLOCK = '#'
@@ -107,6 +111,9 @@ class Grid:
         x, y = point
         return self.matrix[y][x] != math.inf
 
+    def not_passable(self, point):
+        return not self.passable(point)
+
     def neighbors(self, point):
         x, y = point
         results = [(x+1, y), (x, y-1), (x-1, y), (x, y+1)]
@@ -114,6 +121,15 @@ class Grid:
             results.reverse()  # aesthetics
         results = filter(self.in_bounds, results)
         results = filter(self.passable, results)
+        return results
+
+    def neighbor_blocks(self, point):
+        x, y = point
+        results = [(x+1, y), (x, y-1), (x-1, y), (x, y+1)]
+        if (x + y) % 2 == 0:
+            results.reverse()  # aesthetics
+        results = filter(self.in_bounds, results)
+        results = filter(self.not_passable, results)
         return results
 
     def all_neighbors(self, point):
@@ -129,8 +145,32 @@ class Grid:
         return results
 
     def cost(self, from_node, to_node):
-        x, y = to_node
-        return self.matrix[y][x]
+        x1, y1 = from_node
+        x2, y2 = to_node
+        return (self.matrix[y1][x1] + self.matrix[y2][x2]) / 2 * distance(from_node, to_node)
+
+    def get_obstruction(self, point):
+        blocks_for_obstruction = []
+        front_blocks = [point]
+        while front_blocks:
+            block = front_blocks.pop()
+            blocks_for_obstruction.append(block)
+            for x, y in self.neighbor_blocks(block):
+                if (x, y) not in blocks_for_obstruction:
+                    front_blocks.append((x, y))
+        return blocks_for_obstruction
+
+    def divide_into_obstructions(self):
+        blocks = []
+        obstructions = []
+        for j in range(self.height):
+            for i in range(self.width):
+                if self[i, j] == math.inf:
+                    if (i, j) not in blocks:
+                        blocks_for_obstruction = self.get_obstruction((i, j))
+                        blocks.extend(blocks_for_obstruction)
+                        obstructions.append(Obstruction(blocks_for_obstruction))
+        return obstructions
 
     def __repr__(self):
         return '\n'.join(
@@ -145,6 +185,15 @@ class Grid:
 
     def __setitem__(self, item, value):
         self.matrix[item[1]][item[0]] = value
+
+
+class Obstruction:
+    def __init__(self, blocks):
+        self.blocks = blocks
+        self.center = self.find_center()
+
+    def find_center(self):
+        return min(self.blocks, key=lambda block: sum(distance(block, b) for b in self.blocks))
 
 
 def breadth_first_search(graph, start, goal):

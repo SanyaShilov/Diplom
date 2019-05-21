@@ -17,3 +17,7 @@ draw_grid(grid2, width=3, number=cost_so_far, start=(1, 4), goal=(7, 8))
 print()
 draw_grid(grid2, width=3, path=reconstruct_path(came_from, start=(1, 4), goal=(7, 8)))
 print()
+
+obstructions = grid1.divide_into_obstructions()
+for obs in obstructions:
+    print(obs.center)

@@ -132,8 +132,7 @@ class Window(QWidget):
                     self.paint_cell(x, y)
 
         for x, y in self.visited:
-            cost = self.grid.cost(None, (x, y))
-            self.qp.setBrush(GREEN.darker(100 + (cost - 1) * 20))
+            self.qp.setBrush(GREEN)
             self.paint_cell(x, y)
         self.qp.setBrush(Qt.yellow)
         if self.start:
@@ -204,7 +203,7 @@ class Window(QWidget):
             self.save_current = self.current
             self.save_visited = self.visited
             self.gen = my_search_generator(self.grid, self.start, self.goal)
-            self.timer = self.startTimer(300 * 100 / self.panel.timer_spin.value())
+            self.timer = self.startTimer(200 * 100 / self.panel.timer_spin.value())
 
     def restart_f(self):
         if self.going:
