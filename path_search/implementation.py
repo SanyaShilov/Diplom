@@ -13,7 +13,7 @@ dis_above_middle = gaussian(4.5, 0.5)
 dis_big = f_or(gaussian(6, 0.5), lambda x: 1 if x >= 6 else 0)
 
 
-r_degree = Range(0, 48)
+r_degree = Range(0, 180)
 
 deg_small = gaussian(0, 3)
 deg_below_middle = gaussian(15, 5)
@@ -137,7 +137,12 @@ def p_plus_v(p, v):
 
 
 def degree_v(v1, v2):
-    return math.acos(scalar_p(v1, v2) / lv(v1) / lv(v2)) * 180 / math.pi
+    lv1 = lv(v1)
+    lv2 = lv(v2)
+    if lv1 and lv2:
+        return math.acos(scalar_p(v1, v2) / lv(v1) / lv(v2)) * 180 / math.pi
+    return 0
+
 
 def degree_p(p1, p2, p3):
     return degree_v(vector(p1, p2), vector(p1, p3))
@@ -221,12 +226,14 @@ class Grid:
     def fuzzy_heuristic(self, from_node, to_node):
         fh = 0
         for obstruction in self.obstructions:
-            dis = r_distance.closest(distance(from_node, obstruction.center))
-            deg = r_degree.closest(degree_p(from_node, to_node, obstruction.center))
+            block = min(obstruction.all_blocks, key=lambda block: degree_p(from_node, to_node, block))
+            dis = r_distance.closest(distance(from_node, block))
+            deg = r_degree.closest(degree_p(from_node, to_node, block))
             fh += base.evaluate([
                 FuzzySet(r_distance, singleton(dis)),
                 FuzzySet(r_degree, singleton(deg))
             ])
+        print(from_node, to_node, dis, deg, fh)
         return fh * 2
 
     def get_obstruction(self, point):
@@ -271,7 +278,20 @@ class Grid:
 class Obstruction:
     def __init__(self, blocks):
         self.blocks = blocks
+        self.all_blocks = [
+            (i, j)
+            for i in range(
+                min(blocks, key=lambda block: block[0])[0],
+                max(blocks, key=lambda block: block[0])[0] + 1,
+            )
+            for j in range(
+                min(blocks, key=lambda block: block[1])[1],
+                max(blocks, key=lambda block: block[1])[1] + 1,
+            )
+        ]
         self.center = self.find_center()
+        print(self.center)
+        print(self.all_blocks)
 
     def find_center(self):
         return min(self.blocks, key=lambda block: sum(distance(block, b) for b in self.blocks))
