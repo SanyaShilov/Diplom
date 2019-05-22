@@ -226,7 +226,7 @@ class Grid:
     def fuzzy_heuristic(self, from_node, to_node):
         fh = 0
         for obstruction in self.obstructions:
-            block = min(obstruction.all_blocks, key=lambda block: degree_p(from_node, to_node, block))
+            block = obstruction.get_block(from_node, to_node)
             dis = r_distance.closest(distance(from_node, block))
             deg = r_degree.closest(degree_p(from_node, to_node, block))
             fh += base.evaluate([
@@ -289,9 +289,36 @@ class Obstruction:
                 max(blocks, key=lambda block: block[1])[1] + 1,
             )
         ]
-        self.center = self.find_center()
-        print(self.center)
-        print(self.all_blocks)
+        self.left = min(blocks, key=lambda block: block[0])[0]
+        self.right = max(blocks, key=lambda block: block[0])[0]
+        self.top = min(blocks, key=lambda block: block[1])[1]
+        self.bottom = max(blocks, key=lambda block: block[1])[1]
+        self.left_blocks = [(self.left, j) for j in range(self.top, self.bottom + 1)]
+        self.right_blocks = [(self.right, j) for j in range(self.top, self.bottom + 1)]
+        self.top_blocks = [(i, self.top) for i in range(self.left, self.right + 1)]
+        self.bottom_blocks = [(i, self.bottom) for i in range(self.left, self.right + 1)]
 
-    def find_center(self):
-        return min(self.blocks, key=lambda block: sum(distance(block, b) for b in self.blocks))
+    def get_block(self, from_node, to_node):
+        if from_node[0] < self.left:
+            if from_node[1] < self.top:
+                blocks = self.left_blocks + self.top_blocks
+            elif from_node[1] > self.bottom:
+                blocks = self.left_blocks + self.bottom_blocks
+            else:
+                blocks = self.left_blocks
+        elif from_node[0] > self.right:
+            if from_node[1] < self.top:
+                blocks = self.right_blocks + self.top_blocks
+            elif from_node[1] > self.bottom:
+                blocks = self.right_blocks + self.bottom_blocks
+            else:
+                blocks = self.right_blocks
+        else:
+            if from_node[1] < self.top:
+                blocks = self.top_blocks
+            elif from_node[1] > self.bottom:
+                blocks = self.bottom_blocks
+            else:
+                blocks = [block for block in self.all_blocks if 0.5 < distance(block, from_node) < 1.5]
+        block = min(blocks, key=lambda block: degree_p(from_node, to_node, block))
+        return block
