@@ -1,6 +1,28 @@
 from path_search.implementation import *
 
 
+GROUPS = {
+    (1, 1): [[(1, 1), (1, 0), (0, 1), (1, -1), (-1, 1)], [(0, -1), (-1, 0)]],
+    (1, -1): [[(1, -1), (1, 0), (0, -1), (1, 1), (-1, -1)], [(0, 1), (-1, 0)]],
+    (-1, 1): [[(-1, 1), (-1, 0), (0, 1), (1, 1), (-1, -1)], [(1, 0), (0, -1)]],
+    (-1, -1): [[(-1, -1), (-1, 0), (0, -1), (1, -1), (-1, 1)], [(1, 0), (0, 1)]],
+
+    (1, 0): [[(1, 0), (1, 1), (1, -1)], [(0, 1), (0, -1), (-1, 1), (-1, -1)]],
+    (0, 1): [[(0, 1), (1, 1), (-1, 1)], [(1, 0), (-1, 0), (-1, -1), (1, -1)]],
+    (-1, 0): [[(-1, 0), (-1, 1), (-1, -1)], [(0, 1), (0, -1), (1, 1), (1, -1)]],
+    (0, -1): [[(0, -1), (1, -1), (-1, -1)], [(1, 0), (-1, 0), (-1, 1), (1, 1)]],
+
+    None: [[(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]],
+}
+
+
+def divide_into_groups(points, prev, current):
+    v = vector(prev, current) if prev else None
+    for group in GROUPS[v]:
+        gps = [p_plus_v(current, gv) for gv in group]
+        yield [p for p in gps if p in points]
+
+
 def next_in_new_path(came_from, start, goal):
     current = goal
     path = []
@@ -28,7 +50,7 @@ def find_new_path(graph, start, visited):
 
 
 def my_search_generator(graph, start, goal):
-    current = start
+    prev, current = None, start
     visited = {start}
 
     while True:
@@ -45,19 +67,28 @@ def my_search_generator(graph, start, goal):
         points = []
         for next_point in graph.all_neighbors(current):
             if next_point == goal:
-                current = next_point
+                prev, current = current, next_point
                 break
             if next_point not in visited:
                 points.append(next_point)
         else:
             if points:
-                points.sort(key=lambda point: graph.cost(current, point) + heuristic(goal, point))
-                current = points[0]
+                groups = divide_into_groups(points, prev, current)
+                for group in groups:
+                    if group:
+                        group.sort(
+                            key=lambda point:
+                            graph.cost(current, point)
+                            + distance(goal, point)
+                            + graph.fuzzy_heuristic(current, point)
+                        )
+                        prev, current = current, group[0]
+                        break
             else:
-                current = find_new_path(graph, current, visited)
+                prev, current = current, find_new_path(graph, current, visited)
                 while current in visited:
                     yield (
                         current,
                         visited
                     )
-                    current = find_new_path(graph, current, visited)
+                    prev, current = current, find_new_path(graph, current, visited)

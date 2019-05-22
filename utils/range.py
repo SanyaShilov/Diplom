@@ -18,3 +18,6 @@ class Range:
 
     def __iter__(self):
         return (round(self.a + i * self.h, DIGITS) for i in range(self.n))
+
+    def closest(self, num):
+        return self.a + ((num - self.a) // self.h) * self.h

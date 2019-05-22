@@ -199,6 +199,7 @@ class Window(QWidget):
 
     def start_f(self):
         if not self.going and self.start and self.goal:
+            self.grid.divide_into_obstructions()
             self.going = True
             self.save_current = self.current
             self.save_visited = self.visited
