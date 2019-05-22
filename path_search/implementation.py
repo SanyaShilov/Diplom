@@ -6,11 +6,11 @@ from fuzzy_logic import *
 
 r_distance = Range(0, 40)
 
-dis_small = gaussian(0, 0.5)
-dis_below_middle = gaussian(1.5, 0.5)
-dis_middle = gaussian(3, 0.5)
-dis_above_middle = gaussian(4.5, 0.5)
-dis_big = f_or(gaussian(6, 0.5), lambda x: 1 if x >= 6 else 0)
+dis_small = gaussian(0, 0.3)
+dis_below_middle = gaussian(1, 0.3)
+dis_middle = gaussian(2, 0.3)
+dis_above_middle = gaussian(3, 0.3)
+dis_big = f_or(gaussian(4, 0.3), lambda x: 1 if x >= 4 else 0)
 
 
 r_degree = Range(0, 180)
@@ -233,7 +233,6 @@ class Grid:
                 FuzzySet(r_distance, singleton(dis)),
                 FuzzySet(r_degree, singleton(deg))
             ])
-        print(from_node, to_node, dis, deg, fh)
         return fh * 2
 
     def get_obstruction(self, point):
