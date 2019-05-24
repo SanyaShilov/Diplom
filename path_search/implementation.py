@@ -6,29 +6,23 @@ from fuzzy_logic import *
 
 r_distance = Range(0, 40)
 
-dis_small = gaussian(0, 0.3)
-dis_below_middle = gaussian(1, 0.3)
-dis_middle = gaussian(2, 0.3)
-dis_above_middle = gaussian(3, 0.3)
-dis_big = f_or(gaussian(4, 0.3), lambda x: 1 if x >= 4 else 0)
+dis_small = gaussian(0, 0.8)
+dis_middle = gaussian(2.25, 0.8)
+dis_big = f_or(gaussian(4.5, 0.8), lambda x: 1 if x >= 4.5 else 0)
 
 
 r_degree = Range(0, 180)
 
-deg_small = gaussian(0, 3)
-deg_below_middle = gaussian(15, 5)
-deg_middle = gaussian(30, 5)
-deg_above_middle = gaussian(45, 5)
-deg_big = f_or(gaussian(60, 5), lambda x: 1 if x >= 60 else 0)
+deg_small = gaussian(0, 7.5)
+deg_middle = gaussian(22.5, 7.5)
+deg_big = f_or(gaussian(45, 7.5), lambda x: 1 if x >= 45 else 0)
 
 
 r_heuristic = Range(0, 1)
 
-heur_small = gaussian(0, 0.1)
-heur_below_middle = gaussian(0.25, 0.1)
-heur_middle = gaussian(0.5, 0.1)
-heur_above_middle = gaussian(0.75, 0.1)
-heur_big = gaussian(1, 0.1)
+heur_small = gaussian(0, 0.2)
+heur_middle = gaussian(0.5, 0.2)
+heur_big = gaussian(1, 0.2)
 
 
 base = FuzzyBase.from_parameters(
@@ -44,39 +38,11 @@ base = FuzzyBase.from_parameters(
             'conclusion': heur_small
         },
         {
-            'conditions': [dis_above_middle, deg_small],
-            'conclusion': heur_below_middle
-        },
-        {
-            'conditions': [dis_above_middle, deg_below_middle],
-            'conclusion': heur_small
-        },
-        {
             'conditions': [dis_middle, deg_small],
             'conclusion': heur_middle
         },
         {
-            'conditions': [dis_middle, deg_below_middle],
-            'conclusion': heur_below_middle
-        },
-        {
             'conditions': [dis_middle, deg_middle],
-            'conclusion': heur_small
-        },
-        {
-            'conditions': [dis_below_middle, deg_small],
-            'conclusion': heur_above_middle
-        },
-        {
-            'conditions': [dis_below_middle, deg_below_middle],
-            'conclusion': heur_middle
-        },
-        {
-            'conditions': [dis_below_middle, deg_middle],
-            'conclusion': heur_below_middle
-        },
-        {
-            'conditions': [dis_below_middle, deg_above_middle],
             'conclusion': heur_small
         },
         {
@@ -84,16 +50,8 @@ base = FuzzyBase.from_parameters(
             'conclusion': heur_big
         },
         {
-            'conditions': [dis_small, deg_below_middle],
-            'conclusion': heur_above_middle
-        },
-        {
             'conditions': [dis_small, deg_middle],
             'conclusion': heur_middle
-        },
-        {
-            'conditions': [dis_small, deg_above_middle],
-            'conclusion': heur_below_middle
         },
     ],
 )
