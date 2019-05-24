@@ -1,10 +1,11 @@
 import collections
 import math
+import copy
 
 from fuzzy_logic import *
 
 
-r_distance = Range(0, 40)
+r_distance = Range(0, 30 * (2 ** 0.5))
 
 dis_small = gaussian(0, 0.8)
 dis_middle = gaussian(2.25, 0.8)
@@ -111,7 +112,9 @@ class Grid:
         self.width = width
         self.height = height
         self.matrix = [[1 for _ in range(width)] for _ in range(height)]
+        self.copy_matrix = copy.deepcopy(self.matrix)
         self.obstructions = self.get_obstructions()
+        self.movable_obstructions = []
 
     def in_bounds(self, point):
         x, y = point
@@ -182,6 +185,17 @@ class Grid:
                     front_blocks.append((x, y))
         return blocks_for_obstruction
 
+    def move_obstructions(self):
+        self.matrix = copy.deepcopy(self.copy_matrix)
+        for obstruction in self.movable_obstructions:
+            obstruction.move()
+            for block in obstruction.blocks:
+                if block[0] >= 0 and block[1] >= 0:
+                    try:
+                        self[block] = math.inf
+                    except IndexError:
+                        pass
+
     def divide_into_obstructions(self):
         self.obstructions = self.get_obstructions()
 
@@ -197,6 +211,11 @@ class Grid:
                         obstructions.append(Obstruction(blocks_for_obstruction))
         return obstructions
 
+    def restart(self):
+        for obstruction in self.movable_obstructions:
+            obstruction.blocks = obstruction.start_blocks
+        self.matrix = copy.deepcopy(self.copy_matrix)
+
     def __getitem__(self, item):
         return self.matrix[item[1]][item[0]]
 
@@ -205,7 +224,11 @@ class Grid:
 
 
 class Obstruction:
-    def __init__(self, blocks):
+    def __init__(self, blocks, dx=0, dy=0):
+        self.blocks = blocks
+        self.start_blocks = blocks
+        self.dx = dx
+        self.dy = dy
         self.left = min(blocks, key=lambda block: block[0])[0]
         self.right = max(blocks, key=lambda block: block[0])[0]
         self.top = min(blocks, key=lambda block: block[1])[1]
@@ -242,6 +265,9 @@ class Obstruction:
         block = min(blocks, key=lambda block: (degree_p(from_node, to_node, block), distance(from_node, block)))
         return block, sign
 
+    def move(self):
+        self.blocks = [(block[0] + self.dx, block[1] + self.dy) for block in self.blocks]
+
 
 GROUPS = {
     (1, 1): [[(1, 1), (1, 0), (0, 1), (1, -1), (-1, 1)], [(0, -1), (-1, 0)]],
@@ -263,6 +289,9 @@ def divide_into_groups(points, prev, current):
     for group in GROUPS[v]:
         gps = [p_plus_v(current, gv) for gv in group]
         yield [p for p in gps if p in points]
+
+
+# def divide_into_groups(points, prev, current): return [points]
 
 
 def next_in_new_path(came_from, start, goal):
