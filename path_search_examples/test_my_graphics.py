@@ -3,7 +3,6 @@ from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtCore import Qt
 
 from path_search.implementation import *
-from path_search.my_implementation import my_search_generator
 
 import math
 
