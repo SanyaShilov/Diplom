@@ -107,33 +107,11 @@ def degree_p(p1, p2, p3):
 
 
 class Grid:
-    EMPTY = '.'
-    BLOCK = '#'
-
-    def __init__(self, width=None, height=None, matrix=None):
-        if matrix:
-            self.width = len(matrix[0])
-            self.height = len(matrix)
-            self.matrix = [
-                [
-                    1 if symbol == Grid.EMPTY else math.inf if symbol == Grid.BLOCK else int(symbol)
-                    for symbol in line
-                ]
-                for line in matrix
-            ]
-        else:
-            if not width or not height:
-                raise RuntimeError('Can\'t construct grid')
-            self.width = width
-            self.height = height
-            self.matrix = [[1 for _ in range(width)] for _ in range(height)]
-            self.divide_into_obstructions()
-
-    @classmethod
-    def from_filename(cls, filename):
-        with open(filename) as f:
-            matrix = [line.split() for line in f.readlines()]
-            return cls(matrix=matrix)
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.matrix = [[1 for _ in range(width)] for _ in range(height)]
+        self.obstructions = self.get_obstructions()
 
     def in_bounds(self, point):
         x, y = point
@@ -205,6 +183,9 @@ class Grid:
         return blocks_for_obstruction
 
     def divide_into_obstructions(self):
+        self.obstructions = self.get_obstructions()
+
+    def get_obstructions(self):
         blocks = []
         obstructions = []
         for j in range(self.height):
@@ -214,16 +195,7 @@ class Grid:
                         blocks_for_obstruction = self.get_obstruction((i, j))
                         blocks.extend(blocks_for_obstruction)
                         obstructions.append(Obstruction(blocks_for_obstruction))
-        self.obstructions = obstructions
         return obstructions
-
-    def __repr__(self):
-        return '\n'.join(
-            ' '.join(
-                str(elem) if elem != math.inf else Grid.BLOCK for elem in line
-            )
-            for line in self.matrix
-        )
 
     def __getitem__(self, item):
         return self.matrix[item[1]][item[0]]
@@ -234,18 +206,6 @@ class Grid:
 
 class Obstruction:
     def __init__(self, blocks):
-        self.blocks = blocks
-        self.all_blocks = [
-            (i, j)
-            for i in range(
-                min(blocks, key=lambda block: block[0])[0],
-                max(blocks, key=lambda block: block[0])[0] + 1,
-            )
-            for j in range(
-                min(blocks, key=lambda block: block[1])[1],
-                max(blocks, key=lambda block: block[1])[1] + 1,
-            )
-        ]
         self.left = min(blocks, key=lambda block: block[0])[0]
         self.right = max(blocks, key=lambda block: block[0])[0]
         self.top = min(blocks, key=lambda block: block[1])[1]
