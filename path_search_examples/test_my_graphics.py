@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QDockWidget, QMainWindow, QPu
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
 
-from path_search.implementation import *
+from path_search import *
 
 
 class Panel(QWidget):
