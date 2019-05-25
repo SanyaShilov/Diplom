@@ -2,60 +2,7 @@ import collections
 import math
 import copy
 
-from fuzzy_logic import *
-
-
-r_distance = Range(0, 30 * (2 ** 0.5))
-
-dis_small = gaussian(0, 0.8)
-dis_middle = gaussian(2.25, 0.8)
-dis_big = f_or(gaussian(4.5, 0.8), lambda x: 1 if x >= 4.5 else 0)
-
-
-r_degree = Range(0, 180)
-
-deg_small = gaussian(0, 7.5)
-deg_middle = gaussian(22.5, 7.5)
-deg_big = f_or(gaussian(45, 7.5), lambda x: 1 if x >= 45 else 0)
-
-
-r_heuristic = Range(0, 1)
-
-heur_small = gaussian(0, 0.2)
-heur_middle = gaussian(0.5, 0.2)
-heur_big = gaussian(1, 0.2)
-
-
-base = FuzzyBase.from_parameters(
-    conditions_ranges=[r_distance, r_degree],
-    conclusion_range=r_heuristic,
-    rules_parameters=[
-        {
-            'conditions': [dis_big, None],
-            'conclusion': heur_small
-        },
-        {
-            'conditions': [None, deg_big],
-            'conclusion': heur_small
-        },
-        {
-            'conditions': [dis_middle, deg_small],
-            'conclusion': heur_middle
-        },
-        {
-            'conditions': [dis_middle, deg_middle],
-            'conclusion': heur_small
-        },
-        {
-            'conditions': [dis_small, deg_small],
-            'conclusion': heur_big
-        },
-        {
-            'conditions': [dis_small, deg_middle],
-            'conclusion': heur_middle
-        },
-    ],
-)
+from path_search.fuzzy import *
 
 
 class Queue:
@@ -108,6 +55,8 @@ def degree_p(p1, p2, p3):
 
 
 class Grid:
+    BLOCK = math.inf
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -122,7 +71,7 @@ class Grid:
 
     def passable(self, point):
         x, y = point
-        return self.matrix[y][x] != math.inf
+        return self.matrix[y][x] != Grid.BLOCK
 
     def not_passable(self, point):
         return not self.passable(point)
@@ -130,8 +79,6 @@ class Grid:
     def neighbors(self, point):
         x, y = point
         results = [(x+1, y), (x, y-1), (x-1, y), (x, y+1)]
-        if (x + y) % 2 == 0:
-            results.reverse()  # aesthetics
         results = filter(self.in_bounds, results)
         results = filter(self.passable, results)
         return results
@@ -139,8 +86,6 @@ class Grid:
     def neighbor_blocks(self, point):
         x, y = point
         results = [(x+1, y), (x, y-1), (x-1, y), (x, y+1)]
-        if (x + y) % 2 == 0:
-            results.reverse()  # aesthetics
         results = filter(self.in_bounds, results)
         results = filter(self.not_passable, results)
         return results
@@ -192,7 +137,7 @@ class Grid:
             for block in obstruction.blocks:
                 if block[0] >= 0 and block[1] >= 0:
                     try:
-                        self[block] = math.inf
+                        self[block] = Grid.BLOCK
                     except IndexError:
                         pass
 
@@ -204,7 +149,7 @@ class Grid:
         obstructions = []
         for j in range(self.height):
             for i in range(self.width):
-                if self[i, j] == math.inf:
+                if self[i, j] == Grid.BLOCK:
                     if (i, j) not in blocks:
                         blocks_for_obstruction = self.get_obstruction((i, j))
                         blocks.extend(blocks_for_obstruction)

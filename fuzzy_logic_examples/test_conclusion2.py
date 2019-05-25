@@ -41,7 +41,7 @@ f_y_high = gaussian(49, 7)
 
 
 base = FuzzyBase.from_parameters(
-    conditions_ranges=[r_x1, r_x2],
+    condition_ranges=[r_x1, r_x2],
     conclusion_range=r_y,
     rules_parameters=[
         {

@@ -7,15 +7,15 @@ class FuzzyBase:
         self.rules = rules
 
     @classmethod
-    def from_parameters(cls, conditions_ranges, conclusion_range, rules_parameters):
+    def from_parameters(cls, condition_ranges, conclusion_range, rules_parameters):
         return cls(
             [
                 FuzzyRule(
                     [
-                        FuzzySet(condition_range, rule_parameter)
-                        if rule_parameter else None
-                        for condition_range, rule_parameter
-                        in zip(conditions_ranges, rule_parameters['conditions'])
+                        FuzzySet(condition_range, condition)
+                        if condition else None
+                        for condition_range, condition
+                        in zip(condition_ranges, rule_parameters['conditions'])
                     ],
                     FuzzySet(conclusion_range, rule_parameters['conclusion'])
                 )

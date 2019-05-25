@@ -39,7 +39,7 @@ input_old = FuzzySet(r_18_80, f_old)
 input_very_old = FuzzySet(r_18_80, f_very_old)
 
 base = FuzzyBase.from_parameters(
-    conditions_ranges=[r_18_80],
+    condition_ranges=[r_18_80],
     conclusion_range=r_0_1,
     rules_parameters=[
         {

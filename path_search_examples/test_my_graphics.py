@@ -1,15 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QApplication, QDockWidget, QMainWindow, QPushButton, QLabel, QSpinBox
-from PyQt5.QtGui import QPainter, QColor
+from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
 
 from path_search.implementation import *
-
-import math
-
-
-GREEN = QColor(Qt.green)
-BLUE = QColor(Qt.blue)
-CYAN = QColor(Qt.cyan)
 
 
 class Panel(QWidget):
@@ -81,10 +74,10 @@ class Panel(QWidget):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, algorith):
+    def __init__(self):
         super().__init__()
 
-        self.window = Window(self, algorith)
+        self.window = Window(self)
         self.setCentralWidget(self.window)
 
         self.dock = QDockWidget()
@@ -99,7 +92,7 @@ class MainWindow(QMainWindow):
 
 
 class Window(QWidget):
-    def __init__(self, parent, algorith):
+    def __init__(self, parent):
         super().__init__(parent)
 
         self.grid = Grid(width=30, height=30)
@@ -121,13 +114,8 @@ class Window(QWidget):
 
         self.cellsize = min(990 // self.grid.width,
                             990 // self.grid.height)
-        self.cellsize3 = self.cellsize // 3
-        self.cellsize4 = self.cellsize // 4
         self.setFixedSize(self.cellsize * self.grid.width + 1,
                           self.cellsize * self.grid.height + 1)
-        self.cellsize6 = self.cellsize // 6
-        self.cellsize23 = self.cellsize3 * 2
-        self.cellsize34 = self.cellsize4 * 3
         self.qp = QPainter()
 
     def paint_cell(self, i, j):
@@ -148,24 +136,29 @@ class Window(QWidget):
                 0,
                 i * self.cellsize,
                 self.height())
+
         self.qp.setBrush(Qt.black)
         for x in range(self.grid.width):
             for y in range(self.grid.height):
-                if self.grid[x, y] is math.inf:
+                if self.grid[x, y] is Grid.BLOCK:
                     self.paint_cell(x, y)
 
+        self.qp.setBrush(Qt.green)
         for x, y in self.visited:
-            self.qp.setBrush(GREEN)
             self.paint_cell(x, y)
+
         self.qp.setBrush(Qt.yellow)
         if self.start:
             self.paint_cell(*self.start)
+
         self.qp.setBrush(Qt.red)
         if self.goal:
             self.paint_cell(*self.goal)
+
         self.qp.setBrush(Qt.blue)
         if self.current:
             self.paint_cell(*self.current)
+
         self.qp.setBrush(Qt.darkBlue)
         for obstruction in self.grid.movable_obstructions:
             for block in obstruction.blocks:
@@ -218,7 +211,7 @@ class Window(QWidget):
         if self.pressed:
             i, j = self.pressed_cell(event)
             if self.mode == 'set_blocks':
-                self.grid[i, j] = math.inf
+                self.grid[i, j] = Grid.BLOCK
             if self.mode == 'remove_blocks':
                 self.grid[i, j] = 1
             if self.mode == 'set_movable_blocks':
