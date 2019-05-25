@@ -113,10 +113,7 @@ class Grid:
             block, sign = obstruction.get_block(from_node, to_node)
             dis = r_distance.closest(distance(from_node, block))
             deg = r_degree.closest(degree_p(from_node, to_node, block))
-            fh += base.evaluate([
-                FuzzySet(r_distance, singleton(dis)),
-                FuzzySet(r_degree, singleton(deg))
-            ]) * sign
+            fh += base.evaluate([dis, deg]) * sign
         return fh * 2
 
     def get_obstruction(self, point):

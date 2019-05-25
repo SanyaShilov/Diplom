@@ -58,6 +58,6 @@ base = FuzzyBase.from_parameters(
 )
 
 for input in [
-    input_28, input_40, input_young, input_middle, input_old, input_very_old
+    28, 40, input_young, input_middle, input_old, input_very_old
 ]:
     print(base.evaluate([input]))

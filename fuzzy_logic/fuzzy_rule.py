@@ -12,9 +12,9 @@ class FuzzyRule:
         for input, condition in zip(inputs, self.conditions):
             if condition:
                 if isinstance(input, FuzzySet):
-                    height = input.intersection_min(condition).height
+                    height = condition.intersection_min(input).height
                 else:
-                    pass  #TODO: optimized calculation for floats
+                    height = condition.intersection_singleton(input)
                 result *= height
         return result
 

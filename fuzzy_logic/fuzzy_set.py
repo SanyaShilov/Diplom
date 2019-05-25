@@ -172,6 +172,17 @@ class FuzzySet:
     def union_lucasevich(self, f1, f2, x):
         return min(f1(x) + f2(x), 1)
 
+    def intersection_singleton(self, n):
+        return (
+            self.probabilities[-1]
+            if n > self.values[-1]
+            else self.probabilities[
+                bisect.bisect_left(
+                    self.values, n
+                )
+            ]
+        )
+
     def discretization(self, k):
         """
         Дискретизация нечеткого множества
